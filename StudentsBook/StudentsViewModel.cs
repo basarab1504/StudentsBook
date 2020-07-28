@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,28 +39,25 @@ namespace StudentsBook
         }
     }
 
-    class StudentsViewModel : INotifyPropertyChanged
+    class StudentsViewModel : NotifyPropertyChanged
     {
+        private StudentRepository repository;
         private Student selectedStudent;
 
-        public ObservableCollection<Student> Students { get; set; }
+        private RelayCommand addCommand;
+        private RelayCommand removeCommand;
+        private RelayCommand saveCommand;
 
-        private RelayCommand add;
-        public RelayCommand Add
+        public StudentsViewModel()
         {
-            get
-            {
-                return add ??
-                  (add = new RelayCommand(obj =>
-                  {
-                      Student student = new Student() { Name = "Новичок" };
-                      Students.Add(student);
-                      SelectedStudent = student;
-                  }));
-            }
+            repository = new StudentRepository();
+            Students = new ObservableCollection<Student>(repository.GetAllStudents());
+            repository.Added += x => Students.Add(x);
+            repository.Removed += x => Students.Remove(x);
         }
 
-    public Student SelectedStudent
+        public ObservableCollection<Student> Students { get; set; }
+        public Student SelectedStudent
         {
             get { return selectedStudent; }
             set
@@ -69,15 +67,47 @@ namespace StudentsBook
             }
         }
 
-        public StudentsViewModel()
+        public RelayCommand AddCommand
         {
-            Students = new ObservableCollection<Student>(Formatter.G());
+            get
+            {
+                return addCommand ??
+                  (addCommand = new RelayCommand(obj =>
+                  {
+                      Student student = new Student() { Name = "Новичок" };
+                      repository.Add(student);
+                      SelectedStudent = student;
+                  }));
+            }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string prop )
+        public RelayCommand RemoveCommand
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+            get
+            {
+                return removeCommand ??
+                    (removeCommand = new RelayCommand(obj =>
+                    {
+                        Student student = obj as Student;
+                        if (student != null)
+                        {
+                            repository.Remove(student);
+                        }
+                    },
+                    (obj) => Students.Count > 0));
+            }
+        }
+
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return saveCommand ??
+                    (saveCommand = new RelayCommand(obj =>
+                    {
+                        repository.Save();
+                    }));
+            }
         }
     }
 }

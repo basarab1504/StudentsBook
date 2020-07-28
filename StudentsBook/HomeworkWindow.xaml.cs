@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,24 +10,21 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace StudentsBook
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для HomeworkWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class HomeworkWindow : Window
     {
-        public MainWindow()
+        public HomeworkWindow()
         {
             InitializeComponent();
             this.DataContext = new
             {
-                Students = new StudentsViewModel(),
-                Homeworks = new HomeworksViewModel(),
-                Subjects = new SubjectsViewModel()
+                Homeworks = new HomeworksSelectViewModel()
             };
         }
     }

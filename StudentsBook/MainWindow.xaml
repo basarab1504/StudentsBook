@@ -11,10 +11,14 @@
         <XmlDataProvider x:Key="homeworksProvider" Source="homeworks.xml" XPath="homeworks" />
     </Window.Resources>-->
     <TabControl HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="772" Height="389">
-        <TabItem Header="Расписание"/>
-        <TabItem Header="Ученики">
+        <TabItem Header="Расписание" DataContext="{Binding Subjects}">
+            <TabItem.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"></MenuItem>
+                </ContextMenu>
+            </TabItem.ContextMenu>
             <Grid Background="#FFE5E5E5">
-                <ListView Margin="10,10,210,10" ItemsSource="{Binding Path=Students}" SelectedItem="{Binding SelectedStudent}">
+                <ListView Margin="10,39,441,10" ItemsSource="{Binding Path=Subjects}" SelectedItem="{Binding SelectedSubject}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn/>
@@ -22,27 +26,100 @@
                     </ListView.View>
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Добавить" Command="{Binding Add}"></MenuItem>
+                            <MenuItem Header="Добавить" Command="{Binding AddCommand}"></MenuItem>
+                            <MenuItem Header="Удалить" Command="{Binding RemoveCommand}" CommandParameter="{Binding SelectedSubject}"></MenuItem>
                         </ContextMenu>
                     </ListView.ContextMenu>
                 </ListView>
-                <StackPanel HorizontalAlignment="Left" Height="341" Margin="579,10,0,0" VerticalAlignment="Top" Width="167" DataContext="{Binding SelectedStudent}">
-                    <TextBlock Text="Имя"/>
-                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Text="Ставка"/>
-                    <TextBox Text="{Binding Payment, UpdateSourceTrigger=PropertyChanged}" />
+                <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="315"/>
+                <StackPanel HorizontalAlignment="Left" Height="341" Margin="330,10,0,0" VerticalAlignment="Top" Width="416">
+                    <Label Content="Ученик"/>
+                    <ComboBox  ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedSubject.Student, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Дата"/>
+                    <DatePicker SelectedDate="{Binding SelectedSubject.DateTime, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label Content="ДЗ"/>
+                    <Button Content="Изменить" Height="20" Command="{Binding EditHomeworkCommand}" CommandParameter="{Binding SelectedSubject}"/>
+                    <ListView ItemsSource="{Binding Path=Homeworks}" Height="96"></ListView>
+                    <Label Content="Оплачен"/>
+                    <CheckBox IsChecked="{Binding SelectedSubject.IsPaid, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </Grid>
         </TabItem>
-        <TabItem Header="База ДЗ">
+        <TabItem Header="Ученики" DataContext="{Binding Students}">
+            <TabItem.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"></MenuItem>
+                </ContextMenu>
+            </TabItem.ContextMenu>
             <Grid Background="#FFE5E5E5">
-                <ListView Margin="10">
+                <!--<ListView Margin="10,10,192,10" ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn/>
                         </GridView>
                     </ListView.View>
-                </ListView>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Добавить" Command="{Binding AddCommand}"></MenuItem>
+                            <MenuItem Header="Удалить" Command="{Binding RemoveCommand}" CommandParameter="{Binding SelectedStudent}"></MenuItem>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                </ListView >-->
+                <ListBox Margin="10,10,192,10" ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <TextBlock FontSize="18" Text="{Binding Path=Name}" />
+                                <TextBlock Text="{Binding Path=Payment}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Добавить" Command="{Binding AddCommand}"></MenuItem>
+                            <MenuItem Header="Удалить" Command="{Binding RemoveCommand}" CommandParameter="{Binding SelectedStudent}"></MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <StackPanel HorizontalAlignment="Left" Height="341" Margin="579,10,0,0" VerticalAlignment="Top" Width="167" DataContext="{Binding SelectedStudent}">
+                    <Label Content="Имя"/>
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label Content="Ставка"/>
+                    <TextBox Text="{Binding Payment, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="База ДЗ" DataContext="{Binding Homeworks}">
+            <TabItem.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Сохранить" Command="{Binding SaveCommand}"></MenuItem>
+                </ContextMenu>
+            </TabItem.ContextMenu>
+            <Grid Background="#FFE5E5E5">
+                <ListBox Margin="10,10,441,10" ItemsSource="{Binding Path=Homeworks}" SelectedItem="{Binding SelectedHomework}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <TextBlock FontSize="18" Text="{Binding Path=Title}" />
+                                <TextBlock Text="{Binding Path=Description}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Добавить" Command="{Binding AddCommand}"></MenuItem>
+                            <MenuItem Header="Удалить" Command="{Binding RemoveCommand}" CommandParameter="{Binding SelectedHomework}"></MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <StackPanel HorizontalAlignment="Left" Height="341" Margin="330,10,0,0" VerticalAlignment="Top" Width="416" DataContext="{Binding SelectedHomework}">
+                    <TextBlock Text="Название"/>
+                    <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="Задание"/>
+                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="130" />
+                    <TextBlock Text="Ответ"/>
+                    <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}" Height="130" />
+                </StackPanel>
             </Grid>
         </TabItem>
     </TabControl>
