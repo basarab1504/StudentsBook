@@ -45,6 +45,7 @@ namespace StudentsBook
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
+        private RelayCommand editLanguagesCommand;
 
         public StudentsViewModel(StudentModel model)
         {
@@ -90,6 +91,22 @@ namespace StudentsBook
                         }
                     },
                     (obj) => Students.Count > 0));
+            }
+        }
+
+        public RelayCommand EditLanguagesCommand
+        {
+            get
+            {
+                return editLanguagesCommand ??
+                    (editLanguagesCommand = new RelayCommand(obj =>
+                    {
+                        Student student = obj as Student;
+                        if (student != null)
+                        {
+                            new LanguagesWindow(student).Show();
+                        }
+                    }));
             }
         }
     }

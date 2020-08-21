@@ -89,11 +89,14 @@
                         </ListBox>
                     </DockPanel>
                     <DockPanel Grid.Column="1" Margin="10">
-                        <StackPanel DataContext="{Binding SelectedStudent}">
+                        <StackPanel>
                             <Label Content="Имя"/>
-                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedStudent.Name, UpdateSourceTrigger=PropertyChanged}" />
                             <Label Content="Ставка"/>
-                            <TextBox Text="{Binding Payment, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Text="{Binding SelectedStudent.Payment, UpdateSourceTrigger=PropertyChanged}" />
+                            <Label Content="Язык"/>
+                            <Button Content="Изменить" Command="{Binding EditLanguagesCommand}" CommandParameter="{Binding SelectedStudent}"/>
+                            <ListView ItemsSource="{Binding SelectedStudent.Languages}"></ListView>
                         </StackPanel>
                     </DockPanel>
                 </Grid>

@@ -24,6 +24,7 @@ namespace StudentsBook
         private static ObservableCollection<Student> students = new ObservableCollection<Student>(Formatter.GetData<Student>("students.xml", "ArrayOfStudent"));
         private static ObservableCollection<Subject> subjects = new ObservableCollection<Subject>(Formatter.GetData<Subject>("subjects.xml", "ArrayOfSubject"));
         private static ObservableCollection<Homework> homeworks = new ObservableCollection<Homework>(Formatter.GetData<Homework>("homeworks.xml", "ArrayOfHomework"));
+        private static ObservableCollection<string> languages = new ObservableCollection<string>(Formatter.GetData<string>("languages.xml", "ArrayOfLanguages"));
 
         public static ObservableCollection<Student> Students
         {
@@ -39,6 +40,11 @@ namespace StudentsBook
         {
             get => homeworks;
             set { homeworks = value; }
+        }
+        public static ObservableCollection<string> Langugages
+        {
+            get => languages;
+            set { languages = value; }
         }
 
         public static void Load()

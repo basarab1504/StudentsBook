@@ -16,6 +16,8 @@ namespace StudentsBook
         private string name;
         [XmlElement("Payment")]
         private int payment;
+        [XmlArray("Languages")]
+        private List<string> languages;
 
         public string Name
         {
@@ -34,6 +36,16 @@ namespace StudentsBook
             {
                 payment = value;
                 OnPropertyChanged("Payment");
+            }
+        }
+
+        public List<string> Languages
+        {
+            get { return languages; }
+            set
+            {
+                languages = value;
+                OnPropertyChanged("Languages");
             }
         }
 

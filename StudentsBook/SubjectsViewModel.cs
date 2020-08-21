@@ -107,12 +107,14 @@ namespace StudentsBook
                     (googleLoad = new RelayCommand(obj =>
                     {
                         SelectedDatesCollection dates = obj as SelectedDatesCollection;
-                        var coll = GoogleCalendar.GetSubjects(dates[0], dates[dates.Count - 1]);
-                        foreach (var s in coll)
+                        var loaded = GoogleCalendar.GetSubjects(dates[0], dates[dates.Count - 1]);
+                        var existed = Subjects.Where(x => x.From >= dates[0] && x.From <= dates[dates.Count - 1]);
+
+                        foreach (var e in loaded)
                         {
-                            subjectModel.Add(s);
+                            if(!existed.Any(x => x.From == e.From && x.Student.Name == e.Student.Name))
+                                subjectModel.Add(e);
                         }
-                        Subjects = coll;
                         //MessageBox.Show(Subjects.ElementAt(0).From.ToString());
                     }));
             }

@@ -79,6 +79,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -122,6 +124,10 @@
     <Compile Include="HomeworkWindow.xaml.cs">
       <DependentUpon>HomeworkWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LanguagesViewModel.cs" />
+    <Compile Include="LanguagesWindow.xaml.cs">
+      <DependentUpon>LanguagesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Logic.cs" />
     <Compile Include="NotifyPropertyChanged.cs" />
     <Compile Include="StatisticViewModel.cs" />
@@ -130,6 +136,10 @@
     <Compile Include="Subject.cs" />
     <Compile Include="SubjectsViewModel.cs" />
     <Page Include="HomeworkWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LanguagesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

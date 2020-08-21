@@ -61,6 +61,7 @@ namespace StudentsBook
         {
             subjectsViewModel.DatesChanged.Execute(calendar.SelectedDates);
         }
+
         private void Calendar_StatsSelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
             statisticViewModel.DatesChanged.Execute(statsCalendar.SelectedDates);
