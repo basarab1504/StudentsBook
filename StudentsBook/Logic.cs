@@ -5,7 +5,9 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,231 +19,81 @@ using System.Xml.Serialization;
 
 namespace StudentsBook
 {
-    public interface IRepository<T>
-    {
-        event Action<T> Added;
-        event Action<T> Removed;
-        event Action<T> Edited;
-
-        void Add(T e);
-        void Remove(T e);
-        void Edit(T e);
-        void Save();
-    }
-
-    public abstract class BaseRepository<T> : IRepository<T>
-    {
-        public event Action<T> Added;
-        public event Action<T> Removed;
-        public event Action<T> Edited;
-
-        protected List<T> items;
-
-        public void Add(T e)
-        {
-            items.Add(e);
-            Added(e);
-        }
-        public virtual void Remove(T e)
-        {
-            items.Remove(e);
-            Removed(e);
-        }
-        public virtual void Edit(T e)
-        {
-            items[items.FindIndex(x => x.Equals(e))] = e;
-            Edited(e);
-        }
-
-        public abstract void Save();
-    }
-
-    public class HomeworkRepository : BaseRepository<Homework>
-    {
-        public HomeworkRepository()
-        {
-            items = FakeDB.Homeworks;
-        }
-
-        public IEnumerable<Homework> GetAllHomeworks()
-        {
-            return items;
-        }
-
-        public override void Save()
-        {
-            FakeDB.Homeworks = items;
-        }
-    }
-
-    public class SubjectRepository : BaseRepository<Subject>
-    {
-        public SubjectRepository()
-        {
-            items = FakeDB.Subjects;
-        }
-
-        public IEnumerable<Subject> GetAllSubjects()
-        {
-            return items;
-        }
-
-        public IEnumerable<Subject> GetAllSubjectsByDate(DateTime date)
-        {
-            return items.Where(x => x.DateTime == date);
-        }
-
-        public override void Save()
-        {
-            FakeDB.Subjects = items;
-        }
-    }
-
-    public class StudentRepository : BaseRepository<Student>
-    {
-        public StudentRepository()
-        {
-            items = FakeDB.Students;
-        }
-
-        public IEnumerable<Student> GetAllStudents()
-        {
-            return items;
-        }
-
-        public override void Save()
-        {
-            FakeDB.Students = items;
-        }
-    }
-
     public static class FakeDB
     {
-        private static List<Student> students = new List<Student>(Formatter.GetData<Student>("students.xml", "Students"));
-        private static List<Subject> subjects = new List<Subject>(Formatter.GetData<Subject>("subjects.xml", "Subjects"));
-        private static List<Homework> homeworks = new List<Homework>(Formatter.GetData<Homework>("homeworks.xml", "Homeworks"));
+        private static ObservableCollection<Student> students = new ObservableCollection<Student>(Formatter.GetData<Student>("students.xml", "ArrayOfStudent"));
+        private static ObservableCollection<Subject> subjects = new ObservableCollection<Subject>(Formatter.GetData<Subject>("subjects.xml", "ArrayOfSubject"));
+        private static ObservableCollection<Homework> homeworks = new ObservableCollection<Homework>(Formatter.GetData<Homework>("homeworks.xml", "ArrayOfHomework"));
 
-        public static List<Student> Students
+        public static ObservableCollection<Student> Students
         {
             get => students;
             set { students = value; }
         }
-        public static List<Subject> Subjects
+        public static ObservableCollection<Subject> Subjects
         {
             get => subjects;
             set { subjects = value; }
         }
-        public static List<Homework> Homeworks
+        public static ObservableCollection<Homework> Homeworks
         {
             get => homeworks;
             set { homeworks = value; }
         }
+
+        public static void Load()
+        {
+
+        }
+
+        public static void Save()
+        {
+            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<Student>));
+            using (FileStream fs = new FileStream("students.xml", FileMode.Create))
+            {
+                formatter.Serialize(fs, Students);
+            }
+            XmlSerializer formatter1 = new XmlSerializer(typeof(ObservableCollection<Subject>));
+            using (FileStream fs = new FileStream("subjects.xml", FileMode.Create))
+            {
+                formatter1.Serialize(fs, Subjects);
+            }
+            XmlSerializer formatter2 = new XmlSerializer(typeof(ObservableCollection<Homework>));
+            using (FileStream fs = new FileStream("homeworks.xml", FileMode.Create))
+            {
+                formatter2.Serialize(fs, Homeworks);
+            }
+        }
     }
 
 
-    public class NotifyPropertyChanged : INotifyPropertyChanged
+    public abstract class Model<T> : NotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-    }
-    
-    [XmlType("Student")]
-    public class Student : NotifyPropertyChanged
-    {
-        [XmlElement("Name")]
-        private string name;
-        [XmlElement("Payment")]
-        private string payment;
+        public ObservableCollection<T> Items { get; set; }
 
-        public string Name
+        public void Add(T e)
         {
-            get { return name; }
-            set
-            {
-                name = value;
-                OnPropertyChanged("Name");
-            }
+            Items.Add(e);
+            OnPropertyChanged("Items");
+            Save();
         }
 
-        public string Payment
+        public void Remove(T e)
         {
-            get { return payment; }
-            set
-            {
-                payment = value;
-                OnPropertyChanged("Payment");
-            }
+            Items.Remove(e);
+            OnPropertyChanged("Items");
+            Save();
         }
 
-        public override string ToString()
+        public void Change(T e)
         {
-            return Name;
-        }
-    }
-
-    [XmlType("Subject")]
-    public class Subject : NotifyPropertyChanged
-    {
-        [XmlElement("Student")]
-        public Student Student { get; set; }
-        [XmlElement("DateTime")]
-        public DateTime DateTime { get; set; }
-        [XmlElement("IsPaid")]
-        public bool IsPaid { get; set; }
-        [XmlArray("Homeworks")]
-        public Homework[] Homework { get; set; }
-
-        public override string ToString()
-        {
-            return DateTime.ToString();
-        }
-    }
-
-    [XmlType("Homework")]
-    public class Homework : NotifyPropertyChanged
-    {
-        [XmlElement("Title")]
-        private string title;
-        [XmlElement("Description")]
-        private string description;
-        [XmlElement("Code")]
-        private string code;
-
-        public string Title
-        {
-            get { return title; }
-            set
-            {
-                title = value;
-                OnPropertyChanged("Title");
-            }
-        }
-        public string Description
-        {
-            get { return description; }
-            set
-            {
-                description = value;
-                OnPropertyChanged("Description");
-            }
-        }
-        public string Code
-        {
-            get { return code; }
-            set
-            {
-                code = value;
-                OnPropertyChanged("Code");
-            }
+            T s = Items.FirstOrDefault(x => e.Equals(x));
+            s = e;
+            OnPropertyChanged("Items");
+            Save();
         }
 
-        public override string ToString()
-        {
-            return Title;
-        }
+        public abstract void Save();
     }
 
     public static class Formatter
@@ -259,14 +111,12 @@ namespace StudentsBook
         }
     }
 
-    public static class Calendar
+    public static class GoogleCalendar
     {
-        // If modifying these scopes, delete your previously saved credentials
-        // at ~/.credentials/calendar-dotnet-quickstart.json
         static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
         static string ApplicationName = "Google Calendar API .NET Quickstart";
 
-        public static IList<Event> GetEvents(DateTime date)
+        public static IEnumerable<Subject> GetSubjects(DateTime min, DateTime max)
         {
             UserCredential credential;
 
@@ -294,13 +144,39 @@ namespace StudentsBook
 
             // Define parameters of request.
             EventsResource.ListRequest request = service.Events.List("primary");
-            request.TimeMin = date;
+            request.TimeMin = min;
+            request.TimeMax = max;
             request.ShowDeleted = false;
             request.SingleEvents = true;
-            request.MaxResults = 10;
+            request.MaxResults = 50;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
-            return request.Execute().Items;
+            // List events.
+            List<Subject> subjects = new List<Subject>();
+            Events events = request.Execute();
+            foreach (var eventItem in events.Items)
+            {
+                Subject s = EventToSubject(eventItem);
+                if (s != null)
+                    subjects.Add(EventToSubject(eventItem));
+            }
+            return subjects;
+        }
+
+        public static Subject EventToSubject(Event e)
+        {
+            Subject s = null;
+
+            Student student = FakeDB.Students.FirstOrDefault(x => e.Summary.Contains(x.Name));
+
+            if(student != null)
+            {
+                s = new Subject();
+                s.Student = student;
+                s.From = e.Start.DateTime ?? DateTime.Now;
+                s.To = e.End.DateTime ?? DateTime.Now;
+            }
+            return s;
         }
     }
 }

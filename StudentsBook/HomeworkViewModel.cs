@@ -10,19 +10,15 @@ namespace StudentsBook
 {
     class HomeworksViewModel : NotifyPropertyChanged
     {
-        private HomeworkRepository repository;
         private Homework selectedHomework;
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
         private RelayCommand saveCommand;
 
-        public HomeworksViewModel()
+        public HomeworksViewModel(HomeworkModel model)
         {
-            repository = new HomeworkRepository();
-            Homeworks = new ObservableCollection<Homework>(repository.GetAllHomeworks());
-            repository.Added += x => Homeworks.Add(x);
-            repository.Removed += x => Homeworks.Remove(x);
+            Homeworks = model.Items;
         }
 
         public ObservableCollection<Homework> Homeworks { get; set; }
@@ -44,7 +40,7 @@ namespace StudentsBook
                   (addCommand = new RelayCommand(obj =>
                   {
                       Homework homework = new Homework() { Title = "Домашнее задание" };
-                      repository.Add(homework);
+                      Homeworks.Add(homework);
                       SelectedHomework = homework;
                   }));
             }
@@ -60,7 +56,7 @@ namespace StudentsBook
                         Homework homework = obj as Homework;
                         if (homework != null)
                         {
-                            repository.Remove(homework);
+                            Homeworks.Remove(homework);
                         }
                     },
                     (obj) => Homeworks.Count > 0));
@@ -74,7 +70,7 @@ namespace StudentsBook
                 return saveCommand ??
                     (saveCommand = new RelayCommand(obj =>
                     {
-                        repository.Save();
+                        //repository.Save();
                     }));
             }
         }

@@ -41,19 +41,15 @@ namespace StudentsBook
 
     class StudentsViewModel : NotifyPropertyChanged
     {
-        private StudentRepository repository;
         private Student selectedStudent;
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
         private RelayCommand saveCommand;
 
-        public StudentsViewModel()
+        public StudentsViewModel(StudentModel model)
         {
-            repository = new StudentRepository();
-            Students = new ObservableCollection<Student>(repository.GetAllStudents());
-            repository.Added += x => Students.Add(x);
-            repository.Removed += x => Students.Remove(x);
+            Students = model.Items;
         }
 
         public ObservableCollection<Student> Students { get; set; }
@@ -75,7 +71,7 @@ namespace StudentsBook
                   (addCommand = new RelayCommand(obj =>
                   {
                       Student student = new Student() { Name = "Новичок" };
-                      repository.Add(student);
+                      Students.Add(student);
                       SelectedStudent = student;
                   }));
             }
@@ -91,7 +87,7 @@ namespace StudentsBook
                         Student student = obj as Student;
                         if (student != null)
                         {
-                            repository.Remove(student);
+                            Students.Remove(student);
                         }
                     },
                     (obj) => Students.Count > 0));
@@ -105,7 +101,7 @@ namespace StudentsBook
                 return saveCommand ??
                     (saveCommand = new RelayCommand(obj =>
                     {
-                        repository.Save();
+                        //model.Save();
                     }));
             }
         }

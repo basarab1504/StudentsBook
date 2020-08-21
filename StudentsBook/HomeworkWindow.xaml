@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StudentsBook"
         mc:Ignorable="d"
-        Title="HomeworkWindow" Height="450" Width="800">
+        Title="HomeworkWindow" Height="450" Width="800" ResizeMode="NoResize">
     <Grid DataContext="{Binding Homeworks}">
         <ListBox ItemsSource="{Binding AllHomeworks}" SelectedItem="{Binding SelectedPickedHomework}" HorizontalAlignment="Left" Height="388" Margin="10,10,0,0" VerticalAlignment="Top" Width="300"/>
         <ListBox ItemsSource="{Binding SettedHomeworks}" SelectedItem="{Binding SelectedSettedHomework}" HorizontalAlignment="Left" Height="388" Margin="438,10,0,0" VerticalAlignment="Top" Width="300"/>

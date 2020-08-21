@@ -11,22 +11,23 @@ namespace StudentsBook
 {
     class HomeworksSelectViewModel : NotifyPropertyChanged
     {
-        private HomeworkRepository homeworkRepository;
-
+        private Subject subject;
         private Homework selectedPickedHomework;
         private Homework selectedSettedHomework;
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
 
-        public HomeworksSelectViewModel()
-        { 
-            homeworkRepository = new HomeworkRepository();
-            AllHomeworks = new ObservableCollection<Homework>(homeworkRepository.GetAllHomeworks());
-            SettedHomeworks = new ObservableCollection<Homework>();
+        public HomeworksSelectViewModel(Subject _subject)
+        {
+            this.subject = _subject;
+            AllHomeworks = new HomeworkModel().Items;
+            if (_subject.Homework == null)
+                _subject.Homework = new List<Homework>();
+            SettedHomeworks = new ObservableCollection<Homework>(_subject.Homework);
         }
 
-        public ObservableCollection<Homework> AllHomeworks { get; set; }
+        public IEnumerable<Homework> AllHomeworks { get; set; }
         public ObservableCollection<Homework> SettedHomeworks { get; set; }
 
         public Homework SelectedPickedHomework
@@ -58,8 +59,8 @@ namespace StudentsBook
                       Homework homework = obj as Homework;
                       if (homework != null)
                       {
-                          //foreach(var h in homework)
-                            SettedHomeworks.Add(homework);
+                          SettedHomeworks.Add(homework);
+                          subject.Homework.Add(homework);
                       }
                   }/*,
                   (obj) => (obj as Homework)?.Count() > 0*/));
@@ -76,8 +77,8 @@ namespace StudentsBook
                       Homework homework = obj as Homework;
                       if (homework != null)
                       {
-                          //foreach (var h in homework)
-                              SettedHomeworks.Remove(homework);
+                          SettedHomeworks.Remove(homework);
+                          subject.Homework.Remove(homework);
                       }
                   }/*,
                   (obj) => (obj as Homework)?.Count() > 0*/));

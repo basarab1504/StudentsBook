@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Syncfusion.UI.Xaml.Schedule;
 
 namespace StudentsBook
 {
@@ -21,15 +22,39 @@ namespace StudentsBook
     /// </summary>
     public partial class MainWindow : Window
     {
+        StudentModel studentModel = new StudentModel();
+        HomeworkModel homeworkModel = new HomeworkModel();
+        SubjectModel subjectModel = new SubjectModel();
+
+        SubjectsViewModel subjectsViewModel;
+        StatisticViewModel statisticViewModel;
+
         public MainWindow()
         {
             InitializeComponent();
+            subjectsViewModel = new SubjectsViewModel(studentModel, subjectModel);
+            statisticViewModel = new StatisticViewModel();
             this.DataContext = new
             {
-                Students = new StudentsViewModel(),
-                Homeworks = new HomeworksViewModel(),
-                Subjects = new SubjectsViewModel()
+                Students = new StudentsViewModel(studentModel),
+                Homeworks = new HomeworksViewModel(homeworkModel),
+                Subjects = subjectsViewModel,
+                Statistic = statisticViewModel
             };
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            FakeDB.Save();
+        }
+
+        private void Calendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+        {
+            subjectsViewModel.DatesChanged.Execute(calendar.SelectedDates);
+        }
+        private void Calendar_StatsSelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+        {
+            statisticViewModel.DatesChanged.Execute(statsCalendar.SelectedDates);
         }
     }
 }

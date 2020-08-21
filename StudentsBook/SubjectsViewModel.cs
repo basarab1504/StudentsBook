@@ -6,46 +6,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace StudentsBook
 {
     class SubjectsViewModel : NotifyPropertyChanged
     {
-        private DateTime dateTime;
         private Subject selectedSubject;
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
+        private RelayCommand datesChanged;
+        private RelayCommand googleLoad;
         private RelayCommand editHomeworkCommand;
         private RelayCommand saveCommand;
 
-        private StudentRepository studentRepository;
-        private HomeworkRepository homeworkRepository;
-        private SubjectRepository subjectRepository;
+        private SelectedDatesCollection dates;
 
-        public SubjectsViewModel()
+        private IEnumerable<Subject> subjects;
+
+        SubjectModel subjectModel;
+
+        public SubjectsViewModel(StudentModel studentModel, SubjectModel subjectModel)
         {
-            studentRepository = new StudentRepository();
-            Students = new ObservableCollection<Student>(studentRepository.GetAllStudents());
-            homeworkRepository = new HomeworkRepository();
-            subjectRepository = new SubjectRepository();
-            Subjects = new ObservableCollection<Subject>(subjectRepository.GetAllSubjects());
-            Homeworks = new ObservableCollection<Homework>(homeworkRepository.GetAllHomeworks());
+            this.subjectModel = subjectModel;
+            Students = studentModel.Items;
+            //Subjects = subjectModel.Items;
         }
 
-        public ObservableCollection<Subject> Subjects { get; set; }
-        public ObservableCollection<Student> Students { get; set; }
-        public ObservableCollection<Homework> Homeworks { get; set; }
 
-        public DateTime PickedDate
+        public IEnumerable<Subject> Subjects
         {
-            get { return dateTime; }
+            get { return subjects; }
             set
             {
-                dateTime = value;
-                OnPropertyChanged("PickedDate");
+                subjects = value;
+                OnPropertyChanged("Subjects");
             }
         }
+
+        public SelectedDatesCollection Dates
+        {
+            get { return dates; }
+            set
+            {
+                dates = value;
+                OnPropertyChanged("Dates");
+            }
+        }
+
+        public ObservableCollection<Student> Students { get; set; }
 
         public Subject SelectedSubject
         {
@@ -64,10 +74,43 @@ namespace StudentsBook
                 return addCommand ??
                   (addCommand = new RelayCommand(obj =>
                   {
-                      Subject student = new Subject() { };
-                      Subjects.Add(student);
+                      Subject student = new Subject() { From = DateTime.Now, To = DateTime.Now };
+                      subjectModel.Add(student);
                       SelectedSubject = student;
                   }));
+            }
+        }
+
+        public RelayCommand DatesChanged
+        {
+            get
+            {
+                return datesChanged ??
+                  (datesChanged = new RelayCommand(obj =>
+                  {
+                      SelectedDatesCollection dates = obj as SelectedDatesCollection;
+                      Subjects = subjectModel.Items.Where(x => x.From >= dates[0] && x.From <= dates[dates.Count - 1]).OrderBy(x => x.From);
+                      Dates = dates;
+                  }));
+            }
+        }
+
+        public RelayCommand GoogleLoad
+        {
+            get
+            {
+                return googleLoad ??
+                    (googleLoad = new RelayCommand(obj =>
+                    {
+                        SelectedDatesCollection dates = obj as SelectedDatesCollection;
+                        var coll = GoogleCalendar.GetSubjects(dates[0], dates[dates.Count - 1]);
+                        foreach (var s in coll)
+                        {
+                            subjectModel.Add(s);
+                        }
+                        Subjects = coll;
+                        //MessageBox.Show(Subjects.ElementAt(0).From.ToString());
+                    }));
             }
         }
 
@@ -81,10 +124,10 @@ namespace StudentsBook
                         Subject student = obj as Subject;
                         if (student != null)
                         {
-                            Subjects.Remove(student);
+                            subjectModel.Items.Remove(student);
                         }
                     },
-                    (obj) => Subjects.Count > 0));
+                    (obj) => subjectModel.Items.Count > 0));
             }
         }
 
@@ -98,7 +141,7 @@ namespace StudentsBook
                         Subject subject = obj as Subject;
                         if (subject != null)
                         {
-                            new HomeworkWindow().Show();
+                            new HomeworkWindow(SelectedSubject).Show();
                         }
                     }));
             }

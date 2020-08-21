@@ -19,12 +19,12 @@ namespace StudentsBook
     /// </summary>
     public partial class HomeworkWindow : Window
     {
-        public HomeworkWindow()
+        public HomeworkWindow(Subject subject)
         {
             InitializeComponent();
             this.DataContext = new
             {
-                Homeworks = new HomeworksSelectViewModel()
+                Homeworks = new HomeworksSelectViewModel(subject)
             };
         }
     }
