@@ -45,7 +45,6 @@ namespace StudentsBook
 
         private RelayCommand addCommand;
         private RelayCommand removeCommand;
-        private RelayCommand saveCommand;
 
         public StudentsViewModel(StudentModel model)
         {
@@ -91,18 +90,6 @@ namespace StudentsBook
                         }
                     },
                     (obj) => Students.Count > 0));
-            }
-        }
-
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return saveCommand ??
-                    (saveCommand = new RelayCommand(obj =>
-                    {
-                        //model.Save();
-                    }));
             }
         }
     }

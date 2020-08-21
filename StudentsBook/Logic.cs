@@ -148,7 +148,7 @@ namespace StudentsBook
             request.TimeMax = max;
             request.ShowDeleted = false;
             request.SingleEvents = true;
-            request.MaxResults = 50;
+            request.MaxResults = 1000;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
             // List events.

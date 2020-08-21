@@ -48,6 +48,15 @@ namespace StudentsBook
             FakeDB.Save();
         }
 
+        private void SyncItem_Click(object sender, RoutedEventArgs e)
+        {
+            subjectModel.Items.Clear();
+            foreach(var i in GoogleCalendar.GetSubjects(new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31)))
+            {
+                subjectModel.Items.Add(i);
+            }
+        }
+
         private void Calendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
             subjectsViewModel.DatesChanged.Execute(calendar.SelectedDates);

@@ -19,7 +19,6 @@ namespace StudentsBook
         private RelayCommand datesChanged;
         private RelayCommand googleLoad;
         private RelayCommand editHomeworkCommand;
-        private RelayCommand saveCommand;
 
         private SelectedDatesCollection dates;
 
@@ -89,7 +88,12 @@ namespace StudentsBook
                   (datesChanged = new RelayCommand(obj =>
                   {
                       SelectedDatesCollection dates = obj as SelectedDatesCollection;
-                      Subjects = subjectModel.Items.Where(x => x.From >= dates[0] && x.From <= dates[dates.Count - 1]).OrderBy(x => x.From);
+
+                      DateTime start = dates[0];
+                      DateTime end = dates[dates.Count - 1].AddHours(23);
+
+                      Subjects = subjectModel.Items.Where(x => x.From >= start && x.From <= end).OrderBy(x => x.From);
+                      //MessageBox.Show(subjectModel.Items.Where(x => x.From >= dates[0] && x.From <= dates[dates.Count - 1]).Count().ToString());
                       Dates = dates;
                   }));
             }
@@ -143,18 +147,6 @@ namespace StudentsBook
                         {
                             new HomeworkWindow(SelectedSubject).Show();
                         }
-                    }));
-            }
-        }
-
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return saveCommand ??
-                    (saveCommand = new RelayCommand(obj =>
-                    {
-                        
                     }));
             }
         }
