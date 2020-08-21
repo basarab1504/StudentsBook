@@ -17,7 +17,7 @@ namespace StudentsBook
         [XmlElement("Payment")]
         private int payment;
         [XmlArray("Languages")]
-        private List<string> languages;
+        private List<string> languages = new List<string>();
 
         public string Name
         {
