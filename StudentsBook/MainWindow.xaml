@@ -155,8 +155,8 @@
                         <RowDefinition Height="150*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="110*" />
-                        <ColumnDefinition Width="143*" />
+                        <ColumnDefinition Width="100*" />
+                        <ColumnDefinition Width="153*" />
                         <ColumnDefinition Width="130*" />
                     </Grid.ColumnDefinitions>
                     <DockPanel Grid.Row="1" Grid.Column="0" Margin="10">
@@ -180,7 +180,7 @@
                             <lvc:Axis Title="Доходность" LabelFormatter="{Binding Formatter}"></lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                     </lvc:CartesianChart>
-                    <lvc:CartesianChart Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Series="{Binding YearSeriesCollection}" LegendLocation="Right" >
+                    <lvc:CartesianChart Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Series="{Binding YearSeriesCollection}" LegendLocation="Right" >
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="Доход" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
                         </lvc:CartesianChart.AxisY>

@@ -33,7 +33,7 @@ namespace StudentsBook
         {
             InitializeComponent();
             subjectsViewModel = new SubjectsViewModel(studentModel, subjectModel);
-            statisticViewModel = new StatisticViewModel();
+            statisticViewModel = new StatisticViewModel(subjectModel);
             this.DataContext = new
             {
                 Students = new StudentsViewModel(studentModel),

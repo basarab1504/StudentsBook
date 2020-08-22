@@ -16,26 +16,15 @@ namespace StudentsBook
         private int fIncome;
         private int lessons;
         private RelayCommand datesChanged;
+        private SubjectModel model;
 
-        public StatisticViewModel()
+        public StatisticViewModel(SubjectModel model)
         {
             SeriesCollection = new SeriesCollection();
             ColumnSeriesCollection = new SeriesCollection();
             YearSeriesCollection = new SeriesCollection();
-
-            //foreach (Student s in FakeDB.Students)
-            //{
-            //    ColumnSeriesCollection.Add(new ColumnSeries() { Title = s.Name, Values = new ChartValues<int> { FakeDB.Subjects.Where(x => x.Student.Name == s.Name).Count() } });
-            //}
-
-
-            //foreach (Student s in FakeDB.Students)
-            //{
-            //    SeriesCollection.Add(new PieSeries() { Title = s.Name, Values = new ChartValues<int> { FakeDB.Subjects.Where(x => x.Student.Name == s.Name).Count() } });
-            //}
-
+            this.model = model;
             MonthLabels = new[] { "Январь", "Ферваль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" };
-
             Formatter = value => value.ToString("N");
         }
 
@@ -92,7 +81,7 @@ namespace StudentsBook
                       DateTime start = dates[0];
                       DateTime end = dates[dates.Count - 1].AddHours(23);
 
-                      IEnumerable<Subject> subjs = FakeDB.Subjects.Where(x => x.From >= start && x.From <= end);
+                      IEnumerable<Subject> subjs = model.Items.Where(x => x.From >= start && x.From <= end);
                       HashSet<string> studs = new HashSet<string>();
 
                       foreach (Subject s in subjs)
@@ -120,7 +109,7 @@ namespace StudentsBook
                           ls.Values = new ChartValues<int>();
                           while (_start < _end)
                           {
-                              ls.Values.Add(FakeDB.Subjects.Where(x => x.From.Month == _start.Month).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour)));
+                              ls.Values.Add(model.Items.Where(x => x.From.Month == _start.Month).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour)));
                               _start = _start.AddMonths(1);
                           }
 
@@ -131,7 +120,7 @@ namespace StudentsBook
                           fls.Values = new ChartValues<int>();
                           while (_start < _end)
                           {
-                              fls.Values.Add(FakeDB.Subjects.Where(x => x.From.Month == _start.Month && x.IsPaid).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour)));
+                              fls.Values.Add(model.Items.Where(x => x.From.Month == _start.Month && x.IsPaid).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour)));
                               _start = _start.AddMonths(1);
                           }
 
@@ -139,9 +128,9 @@ namespace StudentsBook
                           YearSeriesCollection.Add(fls);
                       }
 
-                      PIncome = FakeDB.Subjects.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
-                      FIncome = FakeDB.Subjects.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
-                      Lessons = FakeDB.Subjects.Where(x => x.From >= start && x.From <= end).Count();
+                      PIncome = model.Items.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
+                      FIncome = model.Items.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
+                      Lessons = model.Items.Where(x => x.From >= start && x.From <= end).Count();
                   }));
             }
         }
