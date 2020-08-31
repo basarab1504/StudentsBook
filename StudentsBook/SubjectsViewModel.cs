@@ -22,26 +22,13 @@ namespace StudentsBook
 
         private SelectedDatesCollection dates;
 
-        private IEnumerable<Subject> subjects;
-
         SubjectModel subjectModel;
 
         public SubjectsViewModel(StudentModel studentModel, SubjectModel subjectModel)
         {
-            this.subjectModel = subjectModel;
+            Subjects = new ObservableCollection<Subject>();
             Students = studentModel.Items;
-            //Subjects = subjectModel.Items;
-        }
-
-
-        public IEnumerable<Subject> Subjects
-        {
-            get { return subjects; }
-            set
-            {
-                subjects = value;
-                OnPropertyChanged("Subjects");
-            }
+            this.subjectModel = subjectModel;
         }
 
         public SelectedDatesCollection Dates
@@ -55,6 +42,7 @@ namespace StudentsBook
         }
 
         public ObservableCollection<Student> Students { get; set; }
+        public ObservableCollection<Subject> Subjects { get; set; }
 
         public Subject SelectedSubject
         {
@@ -63,20 +51,6 @@ namespace StudentsBook
             {
                 selectedSubject = value;
                 OnPropertyChanged("SelectedSubject");
-            }
-        }
-
-        public RelayCommand AddCommand
-        {
-            get
-            {
-                return addCommand ??
-                  (addCommand = new RelayCommand(obj =>
-                  {
-                      Subject student = new Subject() { From = DateTime.Now, To = DateTime.Now };
-                      subjectModel.Add(student);
-                      SelectedSubject = student;
-                  }));
             }
         }
 
@@ -92,13 +66,17 @@ namespace StudentsBook
                       DateTime start = dates[0];
                       DateTime end = dates[dates.Count - 1].AddHours(23);
 
-                      Subjects = subjectModel.Items.Where(x => x.From >= start && x.From <= end).OrderBy(x => x.From);
-                      //MessageBox.Show(subjectModel.Items.Where(x => x.From >= dates[0] && x.From <= dates[dates.Count - 1]).Count().ToString());
+                      Subjects.Clear();
+                      foreach(var x in subjectModel.Items.OrderBy(x=> x.From))
+                      {
+                          if (x.From >= start && x.From <= end)
+                              Subjects.Add(x);
+                      }
                       Dates = dates;
                   }));
             }
         }
-
+        
         public RelayCommand GoogleLoad
         {
             get
@@ -113,10 +91,24 @@ namespace StudentsBook
                         foreach (var e in loaded)
                         {
                             if(!existed.Any(x => x.From == e.From && x.Student.Name == e.Student.Name))
-                                subjectModel.Add(e);
+                                Subjects.Add(e);
                         }
-                        //MessageBox.Show(Subjects.ElementAt(0).From.ToString());
                     }));
+            }
+        }
+
+        public RelayCommand AddCommand
+        {
+            get
+            {
+                return addCommand ??
+                  (addCommand = new RelayCommand(obj =>
+                  {
+                      Subject subject = new Subject() { From = Dates[0], To = Dates[0] };
+                      subjectModel.Add(subject);
+                      Subjects.Add(subject);
+                      SelectedSubject = subject;
+                  }));
             }
         }
 
@@ -127,13 +119,14 @@ namespace StudentsBook
                 return removeCommand ??
                     (removeCommand = new RelayCommand(obj =>
                     {
-                        Subject student = obj as Subject;
-                        if (student != null)
+                        Subject subject = obj as Subject;
+                        if (subject != null)
                         {
-                            subjectModel.Items.Remove(student);
+                            subjectModel.Remove(subject);
+                            Subjects.Remove(subject);
                         }
                     },
-                    (obj) => subjectModel.Items.Count > 0));
+                    (obj) => Subjects.Count > 0));
             }
         }
 

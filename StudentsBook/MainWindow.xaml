@@ -9,11 +9,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="530.625" Width="800">
     <Grid>
-        <Menu Height="25" VerticalAlignment="Top" DataContext="{Binding DataBase}">
+        <Menu Height="30" VerticalAlignment="Top" DataContext="{Binding DataBase}">
             <MenuItem Header="Сохранить" Click="MenuItem_Click"></MenuItem>
             <MenuItem Header="Синхронизировать" Click="SyncItem_Click"></MenuItem>
         </Menu>
-        <TabControl Margin="10,30">
+        <TabControl Margin="10,35">
             <TabItem Header="Расписание" DataContext="{Binding Subjects}">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
@@ -50,7 +50,7 @@
                         <Label DockPanel.Dock="Top" Content="Ученик"/>
                         <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedSubject.Student, UpdateSourceTrigger=PropertyChanged}"/>
                         <Label DockPanel.Dock="Top" Content="Дата"/>
-                        <xctk:DateTimePicker DockPanel.Dock="Top"  Value="{Binding SelectedSubject.From}"/>
+                        <xctk:DateTimePicker DockPanel.Dock="Top" Value="{Binding SelectedSubject.From}"/>
                         <xctk:DateTimePicker DockPanel.Dock="Top"  Value="{Binding SelectedSubject.To}"/>
                         <Label  DockPanel.Dock="Top" Content="Оплачен"/>
                         <CheckBox DockPanel.Dock="Top"  IsChecked="{Binding SelectedSubject.IsPaid, UpdateSourceTrigger=PropertyChanged}"/>
@@ -162,6 +162,8 @@
                     <DockPanel Grid.Row="1" Grid.Column="0" Margin="10">
                         <Label DockPanel.Dock="Top" Content="Количество уроков"></Label>
                         <Label DockPanel.Dock="Top" Content="{Binding Lessons}" FontSize="18" FontWeight="Bold"></Label>
+                        <Label DockPanel.Dock="Top" Content="Количество рабочих часов"></Label>
+                        <Label DockPanel.Dock="Top" Content="{Binding WorkingHours}" FontSize="18" FontWeight="Bold"></Label>
                         <Label DockPanel.Dock="Top" Content="Потенциальный доход"></Label>
                         <Label DockPanel.Dock="Top" Content="{Binding PIncome}" FontSize="18" FontWeight="Bold"/>
                         <Label DockPanel.Dock="Top" Content="Фактический доход"></Label>

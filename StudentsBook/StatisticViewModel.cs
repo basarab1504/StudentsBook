@@ -15,6 +15,7 @@ namespace StudentsBook
         private int pIncome;
         private int fIncome;
         private int lessons;
+        private int workingHours;
         private RelayCommand datesChanged;
         private SubjectModel model;
 
@@ -62,6 +63,16 @@ namespace StudentsBook
             }
         }
 
+        public int WorkingHours
+        {
+            get { return workingHours; }
+            set
+            {
+                workingHours = value;
+                OnPropertyChanged("WorkingHours");
+            }
+        }
+
         public string[] Labels { get; set; }
         public string[] MonthLabels { get; set; }
         public Func<double, string> Formatter { get; set; }
@@ -91,7 +102,7 @@ namespace StudentsBook
 
                       foreach(string s in studs)
                       {
-                          SeriesCollection.Add(new PieSeries() { Title = s, Values = new ChartValues<int> { subjs.Where(x => x.Student.Name == s).Count() } });
+                          SeriesCollection.Add(new PieSeries() { Title = s, Values = new ChartValues<int> { subjs.Where(x => x.Student.Name == s).Sum(x => x.To.Hour - x.From.Hour) } });
                       }
 
                       foreach (string s in studs)
@@ -129,8 +140,9 @@ namespace StudentsBook
                       }
 
                       PIncome = model.Items.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
-                      FIncome = model.Items.Where(x => x.From >= start && x.From <= end).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
+                      FIncome = model.Items.Where(x => x.From >= start && x.From <= end && x.IsPaid).Sum(x => x.Student.Payment * (x.To.Hour - x.From.Hour));
                       Lessons = model.Items.Where(x => x.From >= start && x.From <= end).Count();
+                      WorkingHours = model.Items.Where(x => x.From >= start && x.From <= end).Sum(x => x.To.Hour - x.From.Hour);
                   }));
             }
         }
